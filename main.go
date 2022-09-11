@@ -15,6 +15,11 @@ func main() {
 }
 
 func panicDemo(w http.ResponseWriter, r *http.Request) {
+	defer func () {
+		err := recover()
+		fmt.Fprint(w, err)
+	}()
+	
 	funcThatPanics()
 }
 

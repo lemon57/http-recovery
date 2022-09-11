@@ -1,4 +1,4 @@
-# Exercise #14: Panic/Recover Middleware
+# Exercise Go #1: Panic/Recover Middleware
 
 [![exercise status: released](https://img.shields.io/badge/exercise%20status-released-green.svg?style=for-the-badge)](https://gophercises.com/exercises/recover)
 
@@ -21,3 +21,12 @@ As a bonus exercises you can also look at ways to ensure you don't lose function
 ## Useful links
 
 - <https://blog.golang.org/defer-panic-and-recover>
+
+## Running the script on Docker
+Dockerfile describe the processes:
+- adding ZSH shell in container
+- set up all needed files to build the script
+- build the script and run it
+
+## Dockershell.sh
+Includes ZSH configuration which will be copied to .zshrc in docker container
