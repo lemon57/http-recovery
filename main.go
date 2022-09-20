@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"runtime/debug"
+
+	"github.com/alecthomas/chroma/quick"
 )
 
 func main() {
@@ -25,7 +28,13 @@ func sourceCodeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	io.Copy(w, file)
+	b := bytes.NewBuffer(nil)
+	_, err = io.Copy(b, file)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	_ = quick.Highlight(w, b.String(), "go", "html", "monokai")
 }
 
 func recoverMw(app http.Handler, dev bool) http.HandlerFunc {
@@ -57,7 +66,9 @@ type responseWriter struct {
 }
 
 func (rw *responseWriter) Write(b []byte) (int, error) {
-	rw.writes = append(rw.writes, b)
+	c := make([]byte, len(b))
+	copy(c, b)
+	rw.writes = append(rw.writes, c)
 	return len(b), nil
 }
 
