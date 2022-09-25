@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"runtime/debug"
+	"strings"
 
 	"github.com/alecthomas/chroma/quick"
 )
@@ -49,7 +50,7 @@ func recoverMw(app http.Handler, dev bool) http.HandlerFunc {
 					return
 				}
 				w.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprintf(w, "<h1>panic: %v</h1> <pre>%s</pre>", err, string(stack))
+				fmt.Fprintf(w, "<h1>panic: %v</h1> <pre>%s</pre>", err, makeLinks(string(stack)))
 			}
 		}()
 
@@ -104,4 +105,22 @@ func funcThatPanics() {
 
 func hello(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "<h1>Hello sir!</h1>")
+}
+
+func makeLinks(stack string) string {
+	lines := strings.Split(stack, "\n")
+	for li, line := range lines {
+		if len(line) == 0 || line[0] != '\t' {
+			continue
+		}
+		file := ""
+		for i, ch := range line {
+			if ch == ':' {
+				file = line[1:i]
+				break
+			}
+		}
+		lines[li] = "<a href=\"/debug/?path=" + file + "\">" + file + "</a>" + line[len(file)+1:]
+	}
+	return strings.Join(lines, "\n")
 }
