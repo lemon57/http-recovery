@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"runtime/debug"
 	"strings"
@@ -120,7 +121,9 @@ func makeLinks(stack string) string {
 				break
 			}
 		}
-		lines[li] = "<a href=\"/debug/?path=" + file + "\">" + file + "</a>" + line[len(file)+1:]
+		v := url.Values{}
+		v.Set("path", file)
+		lines[li] = "\t<a href=\"/debug/?" + v.Encode() + "\">" + file + "</a>" + line[len(file)+1:]
 	}
 	return strings.Join(lines, "\n")
 }
