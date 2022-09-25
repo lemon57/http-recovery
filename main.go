@@ -58,7 +58,7 @@ func sourceCodeHandler(w http.ResponseWriter, r *http.Request) {
 	if style == nil {
 		style = styles.Fallback
 	}
-	formatter := html.New(html.TabWidth(2), html.WithLineNumbers(true), html.HighlightLines(lines))
+	formatter := html.New(html.TabWidth(2), html.WithLineNumbers(true), html.LinkableLineNumbers(true, ""), html.HighlightLines(lines))
 	w.Header().Set("Content-Type", "text/html")
 	formatter.Format(w, style, iterator)
 	// _ = quick.Highlight(w, b.String(), "go", "html", "monokai")
@@ -159,7 +159,7 @@ func makeLinks(stack string) string {
 		v := url.Values{}
 		v.Set("path", file)
 		v.Set("line", lineStr.String())
-		lines[li] = "\t<a href=\"/debug/?" + v.Encode() + "\">" + file + ":" + lineStr.String() + "</a>" +
+		lines[li] = "\t<a href=\"/debug/?" + v.Encode() + "#" + lineStr.String() + "\">" + file + ":" + lineStr.String() + "</a>" +
 			line[len(file)+2+len(lineStr.String()):]
 	}
 	return strings.Join(lines, "\n")
